@@ -4,9 +4,6 @@
 
 "use strict";
 
-var startButtonFlag = false;
-
-
 var canvas;
 var gl;
 var program;
@@ -23,13 +20,12 @@ var colorsArray = [];
 var texCoordsArray = [];
 
 var texBig = 256;
-var nCheck = 32;
+var nCheck = 4;
 var topT, downT;
 var b;
-
+var yTorso = -1.5;
 
 var vertices = [
- 
     vec4(-0.5, -0.5, 0.5, 1.0),
     vec4(-0.5, 0.5, 0.5, 1.0),
     vec4(0.5, 0.5, 0.5, 1.0),
@@ -56,7 +52,6 @@ var vertexColors = [
 
 
 //inizialiazzo nodi ID
-
 var bustoId = 0;  //torso
 var cranioId  = 1; //head
 var cranio1Id = 1; 
@@ -121,23 +116,20 @@ var numeNodi = 17;
   obsMain, obsSx, obsDx, obsCenter, obsCenter2.
     
 */
-var theta = [90, -140,    80,20, 100, 10,     100, 10, 80, 20,    120, 90,    90,90,90,90,90 ];
+var theta = [90, -140,    100,20, 85, 20,     100, 20, 85, 20,    120, 90,    90,90,90,90,90 ];
 
-
+//flag per il via
+var goFlag321 = false;
 
 var distanceFromOb = 0;  //DISTANZA DALL'OSTACOLO ---> dovrà arrivare a -18 per il salto
-var obstacleX = 18;
-var leftUpperArmIncr = 1
-var leftLowerArmIncr = 2
-var rightUpperArmIncr = -1
-var rightLowerArmIncr = -2
-var leftUpperLegIncr = -1
-var leftLowerLegIncr = -2
-var rightUpperLegIncr = 1
-var rightLowerLegIncr = 2
-var tailIncr = 1;
-var positionIncr = 0.08;
-var headIncr = -0.7;
+
+//utilizzati per aumentare/diminuire ogni volta i valori di theta delle gambe e della coda
+//per consentire l'intervallo di movimento
+var uPgambaSxFront = 0.3   //velocita delle gambe da -tot a +tot
+var uPgambaDxFront = -0.3
+var uPgambaSxBack = 0.3
+var uPgambaDxBack = -0.3
+var upCodina = 0.3;
 
 
 
@@ -169,7 +161,7 @@ for (var i = 0; i < texBig; i++) {
 var image2 = new Uint8Array(4 * texBig * texBig);
 for (var i = 0; i < texBig; i++) {
     for (var j = 0; j < texBig; j++) {
-        //ciò che è richiesto al punto 2: sfumatura
+        //ciò che è richiesto al punto 2: sfumatura della texture da intenso a meno intenso
         b = 200 - j / 1.3;
         image2[4 * i * texBig + 4 * j] = b;
         image2[4 * i * texBig + 4 * j + 1] = b;
@@ -276,8 +268,8 @@ function initNodes(Id) {
 
     case bustoId:
 
-    m = rotate(theta[bustoId], 0, 1, 0 );
-    m = mult(m, translate(distanceFromOb, -1.5, 0));  
+    m = rotate(90, 0, 1, 0 );
+    m = mult(m, translate(0, yTorso, distanceFromOb));  
     m = mult(m, rotate(theta[bustoId], 1, 0, 0));
 
 
@@ -371,7 +363,7 @@ function initNodes(Id) {
 
     m = rotate(theta[obsMainId], 0, 1, 0 );
     m = mult(m, rotate(theta[obsMainId ], 1, 0, 0));
-    m = mult(m, translate(0, obstacleX, 2));
+    m = mult(m, translate(0, 12, 2));
     figure[obsMainId] = createNode( m, obsMain, null, obsSxId );
     break;
 
@@ -483,7 +475,7 @@ function  gambaSxBack() {
 }
 
 
-//Creazione tail punto 1
+//Creazione della "tail" del punto 1.
 function codina() {
 
     instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * codinaHeight, 0.0));
@@ -527,16 +519,16 @@ function zampaDxBack() {
     
 }
 
-//punto3
+//Inizio punto3 - - - - - - - - - 
 
 function obsMain() {
- fixTex(topT)
+ 
     
     instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * obsMainHeight, 0.0) );
   instanceMatrix = mult(instanceMatrix, scale4(obsMainWidth, obsMainHeight, obsMainWidth) )
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
     for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
-    gl.deleteTexture(downT)
+    
 }
 function obsSx() {
 
@@ -568,10 +560,85 @@ function obsCenter2(){
     for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
 }
 
+// - - - - - - - fine funzioni per l'ostacolo!
 
 
-//punto 4
-function goForwardAndJump(){
+
+
+
+//funzione di "va avanti e salta l'ostacolo" per il punto 4!! 
+
+function go_Forward_And_Jump(){
+    if(goFlag321 == true){
+
+        if(distanceFromOb > 7  && distanceFromOb < 11){
+            //jump
+            theta[bustoId] -= 1;  //60 gradi
+            yTorso += 0.1;
+            theta[cranioId] -= 0.5;  //piega un po la testa
+        }
+        if(distanceFromOb > 10.9 && distanceFromOb < 15){
+            //discesa
+            theta[bustoId] += 1;  //120 gradi
+            yTorso -= 0.1;
+            theta[cranioId] += 0.5;
+        }
+        if(distanceFromOb >14.9 ){
+            //return
+            theta[bustoId] = 90
+            yTorso = -1.5;
+        }
+        
+        //aumento la distance
+        distanceFromOb += 0.1
+
+        /* Per ogni "pezzo" creo un intervallo di movimento dell'angolo */
+        //gambaSxFront = 100
+        if (theta[gambaSxFrontId] > 115)
+            uPgambaSxFront *= -1;
+        theta[gambaSxFrontId] += uPgambaSxFront;
+        if (theta[gambaSxFrontId] < 85)
+            uPgambaSxFront *= -1;
+        theta[gambaSxFrontId] += uPgambaSxFront;
+        
+
+        //gambaDxFront = 85
+        if (theta[gambaDxFrontId] > 100)
+            uPgambaDxFront *= -1
+        theta[gambaDxFrontId] += uPgambaDxFront;
+        if (theta[gambaDxFrontId] < 70)
+            uPgambaDxFront *= -1
+        theta[gambaDxFrontId] += uPgambaDxFront;
+ 
+
+        //100
+        if (theta[gambaSxBackId] > 115)
+            uPgambaSxBack *= -1
+        theta[gambaSxBackId] += uPgambaSxBack;
+        if (theta[gambaSxBackId] < 85)
+            uPgambaSxBack *= -1
+        theta[gambaSxBackId] += uPgambaSxBack;
+      
+
+        //85
+        if (theta[gambaDxBackId] > 100)
+            uPgambaDxBack *= -1;
+        theta[gambaDxBackId] += uPgambaDxBack;
+        if (theta[gambaDxBackId] < 70)
+            uPgambaDxBack *= -1;
+        theta[gambaDxBackId] += uPgambaDxBack;
+
+
+        //muoviCoda
+        if (theta[codinaId] > 130)
+          upCodina *= -1;
+        theta[codinaId] += upCodina;
+        if (theta[codinaId] < 100)
+          upCodina *= -1;
+        theta[codinaId] += upCodina;
+
+    }
+
 }
 
 
@@ -582,10 +649,10 @@ window.onload = function init() {
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
-    gl.viewport( -200, 0, canvas.width, canvas.height );  //modificato per averlo al centro
+    gl.viewport( -150, 0, canvas.width, canvas.height );  //modificato per averlo al centro
     gl.clearColor( 0.26, 0.51, 0.22, 0.5 );
 
-    //per aggiungere le pareti mancanti! ! !  
+    //per aggiungere le pareti mancanti! ! !  !.
     gl.enable(gl.DEPTH_TEST);
 
 
@@ -600,14 +667,14 @@ window.onload = function init() {
     instanceMatrix = mat4();
     
 
-    projectionMatrix = ortho(-23.0,23.0,-23.0, 23.0,-23.0,23.0); //left, right, bottom, top, near, far
+    projectionMatrix = ortho(-18,18,-18, 18,-200,200); //left, right, bottom, top, near, far
     modelViewMatrix = mat4();
-    modelViewMatrix = mult(modelViewMatrix , rotateY(340));
+    //Per aggiungere un po di prospettiva alla corsa del cavallo
+    modelViewMatrix = mult(modelViewMatrix , rotateY(-60));
 
 
     gl.uniformMatrix4fv(gl.getUniformLocation( program, "modelViewMatrix"), false, flatten(modelViewMatrix) );
     gl.uniformMatrix4fv( gl.getUniformLocation( program, "projectionMatrix"), false, flatten(projectionMatrix) );
-
     modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix")
 
     cube();
@@ -652,17 +719,19 @@ window.onload = function init() {
     gl.bindTexture(gl.TEXTURE_2D, downT);
     gl.uniform1i(gl.getUniformLocation(program, "Down"), 1);
 
+
+
+
+
     //slider per il movimento
-    document.getElementById("Run").onclick = function(){
-        startButtonFlag = !startButtonFlag;
-        
+    document.getElementById("Go").onclick = function(){
+        goFlag321 =! goFlag321;
     };
 
+
     //slider per la rotaz.
-    document.getElementById("Rotate").onclick = function(){
-        modelViewMatrix = mult(modelViewMatrix , rotateY(45));
-
-
+    document.getElementById("Rotation30").onclick = function(){
+        modelViewMatrix = mult(modelViewMatrix , rotateY(30));
     };
 
      
@@ -674,62 +743,16 @@ window.onload = function init() {
 
 
 
+
 var render = function() {
     gl.clear( gl.COLOR_BUFFER_BIT );
 
-    /* PROVA PROVA PROVA ROTAZIONE E TRASLAZIONE DURANTE LO SVOLGIMENTO */
-    //DA CANCELLARE
-    //rotation
-    //projectionMatrix = mult(projectionMatrix, rotateY(0.4));
-    //traslation
-    //modelViewMatrix = mult(modelViewMatrix , translate(0.01,0,0));
-    //gl.uniformMatrix4fv(gl.getUniformLocation(program, "projectionMatrix"), false, flatten(projectionMatrix));
-
-
-
-    //PUNTO 4
-    //Il cavallo deve muoversi in avanti, saltare l'ostacolo e cadere in piedi dall'altra parte! ! ! 
-    //goForwardAndJump();
-    if (startButtonFlag){
-        
-        if (Math.abs(distanceFromOb) == -18){
-        //jump 
-        theta[bustoId] -= 30;  
-        theta[gambaDxBack] == 180;
-        theta[gambaDxFront] == 180;
-        theta[gambaSxBack] == 180;
-        theta[gambaSxFront] == 180;
-        }
-        
-        if (Math.abs(distanceFromOb) < -21){
-        //return down
-        theta[bustoId] += 30;
-        theta[gambaDxBack] == 80;
-        theta[gambaDxFront] == 100;
-        theta[gambaSxBack] == 100;
-        theta[gambaSxFront] == 80;
-        } 
-
-
-        //goForward
-
-        //diminuisci distanza
-        distanceFromOb = distanceFromOb - 1;
-        
-
-    }
-
-
-
-
-
+    //Richiamo della funzione per il punto 4
+    //NB: Il cavallo deve muoversi in avanti, saltare l'ostacolo e cadere in piedi dall'altra parte! ! ! 
+    go_Forward_And_Jump();
     
-
-
-
-
-
-
+    for(i=0; i<numeNodi; i++) initNodes(i);
+    
     traverse(obsMainId);
     traverse(bustoId);
     requestAnimFrame(render);
