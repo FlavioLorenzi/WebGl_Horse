@@ -36,18 +36,9 @@ var vertices = [
     vec4(0.5, -0.5, -0.5, 1.0)
 ];
 
-
-var vertexColors = [
+//vertexCol ridimensionato ad un solo colore! ! ! !
+var colore = [
     vec4(0.65, 0.43, 0.21, 1.0),  // marrone utilizzato
-     //soliti
-    vec4(0.0, 0.0, 0.0, 1.0),  // black
-    vec4(1.0, 0.0, 0.0, 1.0),  // red
-    vec4(1.0, 1.0, 0.0, 1.0),  // yellow
-    vec4(0.0, 1.0, 0.0, 1.0),  // green
-    vec4(0.0, 0.0, 1.0, 1.0),  // blue
-    vec4(1.0, 0.0, 1.0, 1.0),  // magenta
-    vec4(0.0, 1.0, 1.0, 1.0),  // white
-    vec4(0.0, 1.0, 1.0, 1.0)   // cyan
 ];
 
 
@@ -144,6 +135,7 @@ var modelViewLoc;
 var pointsArray = [];
 
 //proced. texture con le due image per la checkboard
+//presa dal codice sorgente del cubeTex sul sito
 
 var image1 = new Uint8Array(4 * texBig * texBig);
 for (var i = 0; i < texBig; i++) {
@@ -162,7 +154,7 @@ var image2 = new Uint8Array(4 * texBig * texBig);
 for (var i = 0; i < texBig; i++) {
     for (var j = 0; j < texBig; j++) {
         //ciò che è richiesto al punto 2: sfumatura della texture da intenso a meno intenso
-        b = 200 - j / 1.3;
+        b = 210 - j / 1.3;
         image2[4 * i * texBig + 4 * j] = b;
         image2[4 * i * texBig + 4 * j + 1] = b;
         image2[4 * i * texBig + 4 * j + 2] = b;
@@ -175,19 +167,19 @@ for (var i = 0; i < texBig; i++) {
 //nella funzione quad vado a inserire il push del marrone dentro colorsArray
 function quad(a,b,c,d) {
     pointsArray.push(vertices[a]);
-    colorsArray.push(vertexColors[0]);
+    colorsArray.push(colore[0]);
     texCoordsArray.push(texCoord[0]);
  
     pointsArray.push(vertices[b]);
-    colorsArray.push(vertexColors[0]);
+    colorsArray.push(colore[0]);
     texCoordsArray.push(texCoord[1]);
  
     pointsArray.push(vertices[c]);
-    colorsArray.push(vertexColors[0]);
+    colorsArray.push(colore[0]);
     texCoordsArray.push(texCoord[2]);
  
     pointsArray.push(vertices[d]);
-    colorsArray.push(vertexColors[0]);
+    colorsArray.push(colore[0]);
     texCoordsArray.push(texCoord[3]);
  
 }
@@ -211,7 +203,6 @@ var texCoord = [
     vec2(0, 1)
 ];
  
-
 
 
 //config. della texture
@@ -357,7 +348,7 @@ function initNodes(Id) {
 
 
 
-    //punto3
+    //inizio creazione obstacle punto 3///
 
     case obsMainId:
 
@@ -404,9 +395,6 @@ function initNodes(Id) {
     break;
     
     }
-
-
-
 
 
 
@@ -475,7 +463,7 @@ function  gambaSxBack() {
 }
 
 
-//Creazione della "tail" del punto 1.
+//Creazione della "tail" richiesta nel punto 1.
 function codina() {
 
     instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * codinaHeight, 0.0));
@@ -589,53 +577,56 @@ function go_Forward_And_Jump(){
             yTorso = -1.5;
         }
         
-        //aumento la distance
+        //aumento la distance -----> che in realtà sarebbe la posizione del cavallo
+        //NB stessa cosa poteva essere fatta diminuendo la vera distanza dell'ostacolo,
+        // ovvero il secondo valore (pari a 12) di translate, dentro il mainObs
         distanceFromOb += 0.1
 
         /* Per ogni "pezzo" creo un intervallo di movimento dell'angolo */
+        //per ognuno infatti c'è un upgrade che permette al valore di cambiare segno
         //gambaSxFront = 100
         if (theta[gambaSxFrontId] > 115)
-            uPgambaSxFront *= -1;
+            uPgambaSxFront = -1.1*uPgambaSxFront;
         theta[gambaSxFrontId] += uPgambaSxFront;
         if (theta[gambaSxFrontId] < 85)
-            uPgambaSxFront *= -1;
+            uPgambaSxFront = -1.1*uPgambaSxFront;
         theta[gambaSxFrontId] += uPgambaSxFront;
         
 
         //gambaDxFront = 85
         if (theta[gambaDxFrontId] > 100)
-            uPgambaDxFront *= -1
+            uPgambaDxFront = -1.1*uPgambaDxFront;
         theta[gambaDxFrontId] += uPgambaDxFront;
         if (theta[gambaDxFrontId] < 70)
-            uPgambaDxFront *= -1
+            uPgambaDxFront = -1.1*uPgambaDxFront;
         theta[gambaDxFrontId] += uPgambaDxFront;
  
 
         //100
         if (theta[gambaSxBackId] > 115)
-            uPgambaSxBack *= -1
+            uPgambaSxBack = -1.1*uPgambaSxBack;
         theta[gambaSxBackId] += uPgambaSxBack;
         if (theta[gambaSxBackId] < 85)
-            uPgambaSxBack *= -1
+            uPgambaSxBack = -1.1*uPgambaSxBack;
         theta[gambaSxBackId] += uPgambaSxBack;
       
 
         //85
         if (theta[gambaDxBackId] > 100)
-            uPgambaDxBack *= -1;
+            uPgambaDxBack = -1.1*uPgambaDxBack;
         theta[gambaDxBackId] += uPgambaDxBack;
         if (theta[gambaDxBackId] < 70)
-            uPgambaDxBack *= -1;
+            uPgambaDxBack = -1.1*uPgambaDxBack;
         theta[gambaDxBackId] += uPgambaDxBack;
 
 
         //muoviCoda
         if (theta[codinaId] > 130)
-          upCodina *= -1;
-        theta[codinaId] += upCodina;
+          upCodina = -1.1*upCodina;
+        theta[codinaId] = theta[codinaId] + upCodina;
         if (theta[codinaId] < 100)
-          upCodina *= -1;
-        theta[codinaId] += upCodina;
+          upCodina = -1.1*upCodina;
+        theta[codinaId] = theta[codinaId] + upCodina;
 
     }
 
@@ -652,7 +643,7 @@ window.onload = function init() {
     gl.viewport( -150, 0, canvas.width, canvas.height );  //modificato per averlo al centro
     gl.clearColor( 0.26, 0.51, 0.22, 0.5 );
 
-    //per aggiungere le pareti mancanti! ! !  !.
+    //per aggiungere le pareti trasparenti/mancanti! ! !  !.
     gl.enable(gl.DEPTH_TEST);
 
 
@@ -679,14 +670,8 @@ window.onload = function init() {
 
     cube();
 
-    //inizializzo i nuovi buffers
-    var cBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(colorsArray), gl.STATIC_DRAW);
- 
-    var vColor = gl.getAttribLocation(program, "vColor");
-    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vColor);
+    
+    //zona buffer !! !
  
     var vBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
@@ -695,20 +680,28 @@ window.onload = function init() {
     var vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
+
+    //inizializzo i nuovi buffers
+
+    var cBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(colorsArray), gl.STATIC_DRAW);
+ 
+    var vColor = gl.getAttribLocation(program, "vColor");
+    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vColor);
  
     var tBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW);
 
-    //buffer per la texture
+    //NB buffer per la texture
     var vTexCoord = gl.getAttribLocation(program, "vTexCoord");
     gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vTexCoord);
-    
-    
 
 
-    //richiamo texture
+    //richiamo texture.
     fixTex();
     // e attivazione
     gl.activeTexture(gl.TEXTURE0);
@@ -722,17 +715,21 @@ window.onload = function init() {
 
 
 
+    //-------------------
+            //Centro di controllo (buttons)
 
-    //slider per il movimento
+    //button per il movimento
     document.getElementById("Go").onclick = function(){
         goFlag321 =! goFlag321;
     };
-
-
-    //slider per la rotaz.
+    //button per la rotaz.
     document.getElementById("Rotation30").onclick = function(){
         modelViewMatrix = mult(modelViewMatrix , rotateY(30));
     };
+    //-------------------
+
+
+
 
      
     for(i=0; i<numeNodi; i++) initNodes(i);
@@ -758,3 +755,26 @@ var render = function() {
     requestAnimFrame(render);
 }
 
+
+
+
+//NB altro modo per fare il salto: telecamera fissa sul cavallo, non sull'ostacolo
+
+/* if(trueDistance > 2  && trueDistance < 6){
+            //jump
+            theta[bustoId] -= 1;  //60 gradi
+            yTorso += 0.1;
+            theta[cranioId] -= 0.5;  //piega un po la testa
+        }
+        if(trueDistance > -2.1 && trueDistance < 1.9){
+            //discesa
+            theta[bustoId] += 1;  //120 gradi
+            yTorso -= 0.1;
+            theta[cranioId] += 0.5;
+        }
+        if(trueDistance < -6.1 ){
+            //return
+            theta[bustoId] = 90
+            yTorso = -1.5;
+        }
+        */
