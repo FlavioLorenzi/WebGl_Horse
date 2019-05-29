@@ -20,7 +20,7 @@ var colorsArray = [];
 var texCoordsArray = [];
 
 var texBig = 256;
-var nCheck = 4;
+var nCheck = 6;
 var topT, downT;
 var b;
 var yTorso = -1.5;
@@ -57,12 +57,13 @@ var gambaDxBackId = 8;//rightUleg
 var zampaDxBackId = 9;//rightLleg
 var codinaId = 10;      //tailAggiunta
 
-//punto3
+//id ostacolii per il punto3" ! !
 var obsMainId = 12;
 var obsSxId = 13;
 var obsDxId = 14;
 var obsCenterId = 15;
 var obsCenter2Id = 16;
+
 
 var bustoHeight = 4.9;
 var bustoWidth = 1.7;
@@ -83,7 +84,7 @@ var cranioWidth = 1.0;
 var codinaHeight = 1.5;
 var codinaWidth = 0.3;
 
-//punto3
+//grandezze ostacoli per il punto3"! ! 
 var obsMainHeight = 0.4;
 var obsMainWidth = 0.9;
 var obsSxHeight = 8.5;
@@ -116,11 +117,11 @@ var distanceFromOb = 0;  //DISTANZA DALL'OSTACOLO ---> dovrà arrivare a -18 per
 
 //utilizzati per aumentare/diminuire ogni volta i valori di theta delle gambe e della coda
 //per consentire l'intervallo di movimento
-var uPgambaSxFront = 0.3   //velocita delle gambe da -tot a +tot
+var uPgambaSxFront = 0.3   //incr. per le velocita' delle gambe da -tot a +tot
 var uPgambaDxFront = -0.3
 var uPgambaSxBack = 0.3
 var uPgambaDxBack = -0.3
-var upCodina = 0.3;
+var upCodina = -0.3;
 
 
 
@@ -155,6 +156,7 @@ for (var i = 0; i < texBig; i++) {
     for (var j = 0; j < texBig; j++) {
         //ciò che è richiesto al punto 2: sfumatura della texture da intenso a meno intenso
         b = 210 - j / 1.3;
+        //impostaz. colore
         image2[4 * i * texBig + 4 * j] = b;
         image2[4 * i * texBig + 4 * j + 1] = b;
         image2[4 * i * texBig + 4 * j + 2] = b;
@@ -413,7 +415,7 @@ function traverse(Id) {
 function busto() {
 
     fixTex(topT);
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5*bustoHeight, 0.0) );
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5* bustoHeight, 0.0) );
     instanceMatrix = mult(instanceMatrix, scale4( bustoWidth, bustoHeight, bustoWidth));
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
     for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
@@ -559,78 +561,84 @@ function obsCenter2(){
 function go_Forward_And_Jump(){
     if(goFlag321 == true){
 
-        if(distanceFromOb > 7  && distanceFromOb < 11){
+        //tre fasi per il salto
+        if(distanceFromOb > 5  && distanceFromOb < 10){
             //jump
-            theta[bustoId] -= 1;  //60 gradi
+            theta[bustoId] -= 1.0;  //60 gradi
             yTorso += 0.1;
             theta[cranioId] -= 0.5;  //piega un po la testa
+
         }
-        if(distanceFromOb > 10.9 && distanceFromOb < 15){
+        if(distanceFromOb > 9.9 && distanceFromOb < 14.9){
             //discesa
-            theta[bustoId] += 1;  //120 gradi
+            theta[bustoId] += 1.0;  //120 gradi
             yTorso -= 0.1;
             theta[cranioId] += 0.5;
         }
-        if(distanceFromOb >14.9 ){
+        if(distanceFromOb >14.8 ){
             //return
             theta[bustoId] = 90
             yTorso = -1.5;
         }
         
-        //aumento la distance -----> che in realtà sarebbe la posizione del cavallo
-        //NB stessa cosa poteva essere fatta diminuendo la vera distanza dell'ostacolo,
-        // ovvero il secondo valore (pari a 12) di translate, dentro il mainObs
-        distanceFromOb += 0.1
-
-        /* Per ogni "pezzo" creo un intervallo di movimento dell'angolo */
-        //per ognuno infatti c'è un upgrade che permette al valore di cambiare segno
-        //gambaSxFront = 100
-        if (theta[gambaSxFrontId] > 115)
-            uPgambaSxFront = -1.1*uPgambaSxFront;
-        theta[gambaSxFrontId] += uPgambaSxFront;
-        if (theta[gambaSxFrontId] < 85)
-            uPgambaSxFront = -1.1*uPgambaSxFront;
-        theta[gambaSxFrontId] += uPgambaSxFront;
         
+        if(distanceFromOb < 20){ //per garantire lo stop
 
-        //gambaDxFront = 85
-        if (theta[gambaDxFrontId] > 100)
-            uPgambaDxFront = -1.1*uPgambaDxFront;
-        theta[gambaDxFrontId] += uPgambaDxFront;
-        if (theta[gambaDxFrontId] < 70)
-            uPgambaDxFront = -1.1*uPgambaDxFront;
-        theta[gambaDxFrontId] += uPgambaDxFront;
- 
+            //aumento la -distanceFromOb -----> che in realtà sarebbe la posizione del cavallo
+            //NB stessa cosa poteva essere fatta diminuendo la vera distanza dell'ostacolo,
+            // ovvero il secondo valore (pari a 12) di translate, dentro il mainObs
+            distanceFromOb += 0.12
 
-        //100
-        if (theta[gambaSxBackId] > 115)
-            uPgambaSxBack = -1.1*uPgambaSxBack;
-        theta[gambaSxBackId] += uPgambaSxBack;
-        if (theta[gambaSxBackId] < 85)
-            uPgambaSxBack = -1.1*uPgambaSxBack;
-        theta[gambaSxBackId] += uPgambaSxBack;
-      
+            /* Per ogni "pezzo" creo un intervallo di movimento dell'angolo */
+            //per ognuno infatti c'è un upgrade che permette al valore di cambiare segno
 
-        //85
-        if (theta[gambaDxBackId] > 100)
-            uPgambaDxBack = -1.1*uPgambaDxBack;
-        theta[gambaDxBackId] += uPgambaDxBack;
-        if (theta[gambaDxBackId] < 70)
-            uPgambaDxBack = -1.1*uPgambaDxBack;
-        theta[gambaDxBackId] += uPgambaDxBack;
+            //gambaSxFront = 100
+            theta[gambaSxFrontId] += uPgambaSxFront;
+            if (theta[gambaSxFrontId] > 115)
+                uPgambaSxFront = -1.1*uPgambaSxFront;
+            theta[gambaSxFrontId] += uPgambaSxFront;
+            if (theta[gambaSxFrontId] < 85)
+                uPgambaSxFront = -1.1*uPgambaSxFront;
 
+            //gambaDxFront = 85
+            theta[gambaDxFrontId] += uPgambaDxFront;
+            if (theta[gambaDxFrontId] > 100)
+                uPgambaDxFront = -1.1*uPgambaDxFront;
+            theta[gambaDxFrontId] += uPgambaDxFront;
+            if (theta[gambaDxFrontId] < 70)
+                uPgambaDxFront = -1.1*uPgambaDxFront;
 
-        //muoviCoda
-        if (theta[codinaId] > 130)
-          upCodina = -1.1*upCodina;
-        theta[codinaId] = theta[codinaId] + upCodina;
-        if (theta[codinaId] < 100)
-          upCodina = -1.1*upCodina;
-        theta[codinaId] = theta[codinaId] + upCodina;
+            //100
+            theta[gambaSxBackId] += uPgambaSxBack;
+            if (theta[gambaSxBackId] > 115)
+                uPgambaSxBack = -1.1*uPgambaSxBack;
+            theta[gambaSxBackId] += uPgambaSxBack;
+            if (theta[gambaSxBackId] < 85)
+                uPgambaSxBack = -1.1*uPgambaSxBack;
 
+            //85
+            theta[gambaDxBackId] += uPgambaDxBack;
+            if (theta[gambaDxBackId] > 100)
+                uPgambaDxBack = -1.1*uPgambaDxBack;
+            theta[gambaDxBackId] += uPgambaDxBack;
+            if (theta[gambaDxBackId] < 70)
+                uPgambaDxBack = -1.1*uPgambaDxBack;
+            
+            //muoviCoda!
+            theta[codinaId] = theta[codinaId] + upCodina;
+            if (theta[codinaId] > 130)
+              upCodina = -1.1*upCodina;
+            theta[codinaId] = theta[codinaId] + upCodina;
+            if (theta[codinaId] < 100)
+              upCodina = -1.1*upCodina;
+            
+        }
     }
 
 }
+
+
+
 
 
 window.onload = function init() {
@@ -640,7 +648,7 @@ window.onload = function init() {
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
-    gl.viewport( -150, 0, canvas.width, canvas.height );  //modificato per averlo al centro
+    gl.viewport( -150, 100, canvas.width, canvas.height );  //modificato per averlo al centro
     gl.clearColor( 0.26, 0.51, 0.22, 0.5 );
 
     //per aggiungere le pareti trasparenti/mancanti! ! !  !.
@@ -758,8 +766,8 @@ var render = function() {
 
 
 
+//-------------------
 //NB altro modo per fare il salto: telecamera fissa sul cavallo, non sull'ostacolo
-
 /* if(trueDistance > 2  && trueDistance < 6){
             //jump
             theta[bustoId] -= 1;  //60 gradi
