@@ -594,7 +594,7 @@ function go_Forward_And_Jump(){
             /* Per ogni "pezzo" creo un intervallo di movimento dell'angolo */
             //per ognuno infatti c'è un upgrade che permette al valore di cambiare segno
 
-            if(distanceFromOb < 5.3 || distanceFromOb > 14.8){ //per non far muovere le gambe durante il salto
+            if(distanceFromOb < 5.5 || distanceFromOb > 14.8){ //per non far muovere le gambe durante il salto
 
                 //gambaSxFront = 100
                 theta[gambaSxFrontId] += uPgambaSxFront;
