@@ -20,7 +20,7 @@ var colorsArray = [];
 var texCoordsArray = [];
 
 var texBig = 256;
-var nCheck = 6;
+var nCheck = 8;
 var topT, downT;
 var b;
 var yTorso = -1.5;
@@ -566,7 +566,7 @@ function go_Forward_And_Jump(){
             //jump
             theta[bustoId] -= 1.0;  //60 gradi
             yTorso += 0.1;
-            theta[cranioId] -= 0.5;  //piega un po la testa
+            theta[cranioId] -= 0.5;  //piega un po' la testa
 
         }
         if(distanceFromOb > 9.9 && distanceFromOb < 14.9){
@@ -582,7 +582,7 @@ function go_Forward_And_Jump(){
         }
         
         
-        if(distanceFromOb < 20){ //per garantire lo stop
+        if(distanceFromOb < 25){ //per garantire lo stop
 
             //aumento la -distanceFromOb -----> che in realtà sarebbe la posizione del cavallo
             //NB stessa cosa poteva essere fatta diminuendo la vera distanza dell'ostacolo,
@@ -624,7 +624,7 @@ function go_Forward_And_Jump(){
             if (theta[gambaDxBackId] < 70)
                 uPgambaDxBack = -1.1*uPgambaDxBack;
             
-            //muoviCoda!
+            //muoviAncheLaCoda
             theta[codinaId] = theta[codinaId] + upCodina;
             if (theta[codinaId] > 130)
               upCodina = -1.1*upCodina;
@@ -731,7 +731,7 @@ window.onload = function init() {
         goFlag321 =! goFlag321;
     };
     //button per la rotaz.
-    document.getElementById("Rotation30").onclick = function(){
+    document.getElementById("Rotation30Y").onclick = function(){
         modelViewMatrix = mult(modelViewMatrix , rotateY(30));
     };
     //-------------------
@@ -768,6 +768,7 @@ var render = function() {
 
 //-------------------
 //NB altro modo per fare il salto: telecamera fissa sul cavallo, non sull'ostacolo
+//diminuisci la distanza dall'ostacolo invece che aumentare la position del cavallo!!!
 /* if(trueDistance > 2  && trueDistance < 6){
             //jump
             theta[bustoId] -= 1;  //60 gradi
