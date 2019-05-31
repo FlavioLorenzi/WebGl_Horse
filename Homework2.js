@@ -553,7 +553,9 @@ function obsCenter2(){
 // - - - - - - - fine funzioni per l'ostacolo!
 
 
+function avanti(){
 
+}
 
 
 //funzione di "va avanti e salta l'ostacolo" per il punto 4!! 
@@ -582,7 +584,7 @@ function go_Forward_And_Jump(){
         }
         
         
-        if(distanceFromOb < 25){ //per garantire lo stop
+        if(distanceFromOb < 26){ //per garantire lo stop
 
             //aumento la -distanceFromOb -----> che in realtà sarebbe la posizione del cavallo
             //NB stessa cosa poteva essere fatta diminuendo la vera distanza dell'ostacolo,
@@ -592,46 +594,50 @@ function go_Forward_And_Jump(){
             /* Per ogni "pezzo" creo un intervallo di movimento dell'angolo */
             //per ognuno infatti c'è un upgrade che permette al valore di cambiare segno
 
-            //gambaSxFront = 100
-            theta[gambaSxFrontId] += uPgambaSxFront;
-            if (theta[gambaSxFrontId] > 115)
-                uPgambaSxFront = -1.1*uPgambaSxFront;
-            theta[gambaSxFrontId] += uPgambaSxFront;
-            if (theta[gambaSxFrontId] < 85)
-                uPgambaSxFront = -1.1*uPgambaSxFront;
+            if(distanceFromOb < 5.3 || distanceFromOb > 14.8){ //per non far muovere le gambe durante il salto
 
-            //gambaDxFront = 85
-            theta[gambaDxFrontId] += uPgambaDxFront;
-            if (theta[gambaDxFrontId] > 100)
-                uPgambaDxFront = -1.1*uPgambaDxFront;
-            theta[gambaDxFrontId] += uPgambaDxFront;
-            if (theta[gambaDxFrontId] < 70)
-                uPgambaDxFront = -1.1*uPgambaDxFront;
+                //gambaSxFront = 100
+                theta[gambaSxFrontId] += uPgambaSxFront;
+                if (theta[gambaSxFrontId] > 115)
+                    uPgambaSxFront = -1.1*uPgambaSxFront;
+                theta[gambaSxFrontId] += uPgambaSxFront;
+                if (theta[gambaSxFrontId] < 85)
+                    uPgambaSxFront = -1.1*uPgambaSxFront;
 
-            //100
-            theta[gambaSxBackId] += uPgambaSxBack;
-            if (theta[gambaSxBackId] > 115)
-                uPgambaSxBack = -1.1*uPgambaSxBack;
-            theta[gambaSxBackId] += uPgambaSxBack;
-            if (theta[gambaSxBackId] < 85)
-                uPgambaSxBack = -1.1*uPgambaSxBack;
+                //gambaDxFront = 85
+                theta[gambaDxFrontId] += uPgambaDxFront;
+                if (theta[gambaDxFrontId] > 100)
+                    uPgambaDxFront = -1.1*uPgambaDxFront;
+                theta[gambaDxFrontId] += uPgambaDxFront;
+                if (theta[gambaDxFrontId] < 70)
+                    uPgambaDxFront = -1.1*uPgambaDxFront;
 
-            //85
-            theta[gambaDxBackId] += uPgambaDxBack;
-            if (theta[gambaDxBackId] > 100)
-                uPgambaDxBack = -1.1*uPgambaDxBack;
-            theta[gambaDxBackId] += uPgambaDxBack;
-            if (theta[gambaDxBackId] < 70)
-                uPgambaDxBack = -1.1*uPgambaDxBack;
-            
-            //muoviAncheLaCoda
-            theta[codinaId] = theta[codinaId] + upCodina;
-            if (theta[codinaId] > 130)
-              upCodina = -1.1*upCodina;
-            theta[codinaId] = theta[codinaId] + upCodina;
-            if (theta[codinaId] < 100)
-              upCodina = -1.1*upCodina;
-            
+                //100
+                theta[gambaSxBackId] += uPgambaSxBack;
+                if (theta[gambaSxBackId] > 115)
+                    uPgambaSxBack = -1.1*uPgambaSxBack;
+                theta[gambaSxBackId] += uPgambaSxBack;
+                if (theta[gambaSxBackId] < 85)
+                    uPgambaSxBack = -1.1*uPgambaSxBack;
+
+                //85
+                theta[gambaDxBackId] += uPgambaDxBack;
+                if (theta[gambaDxBackId] > 100)
+                    uPgambaDxBack = -1.1*uPgambaDxBack;
+                theta[gambaDxBackId] += uPgambaDxBack;
+                if (theta[gambaDxBackId] < 70)
+                    uPgambaDxBack = -1.1*uPgambaDxBack;
+                
+                //muoviAncheLaCoda
+                theta[codinaId] = theta[codinaId] + upCodina;
+                if (theta[codinaId] > 130)
+                  upCodina = -1.1*upCodina;
+                theta[codinaId] = theta[codinaId] + upCodina;
+                if (theta[codinaId] < 100)
+                  upCodina = -1.1*upCodina;
+                
+            }
+
         }
     }
 
