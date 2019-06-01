@@ -6,3 +6,4 @@ Last changes
 (not mentioned into the report):
 -the legs go back during the jump;
 -rotation button changed from 30° to 15°;
+-ortho projection and gl.viewport set better.
