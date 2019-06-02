@@ -2,7 +2,7 @@
 Homework 2: Lorenzi Flavio - 1662963
 
 
-Last changes
+Last "aesthetic" changes
 (not mentioned into the report):
 -the legs go back during the jump;
 -rotation button changed from 30° to 15°;
