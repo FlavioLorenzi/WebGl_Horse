@@ -39,7 +39,8 @@ var vertices = [
 //vertexCol ridimensionato ad un solo colore! ! ! !
 var colore = [
     vec4(0.65, 0.43, 0.21, 1.0),  // marrone utilizzato
-    vec4(0.8, 0.1, 0.1, 1.0)   //un altro di default
+    vec4(0, 0, 0, 1.0),  //nero
+    vec4(0.7, 0.5, 0.4, 1) //marrone chiaro
 ];
 
 
@@ -118,11 +119,11 @@ var distanceFromOb = 0;  //DISTANZA DALL'OSTACOLO ---> dovrà arrivare a -18 per
 
 //utilizzati per aumentare/diminuire ogni volta i valori di theta delle gambe e della coda
 //per consentire l'intervallo di movimento
-var uPgambaSxFront = 0.3   //incr. per le velocita' delle gambe da -tot a +tot
-var uPgambaDxFront = -0.3
-var uPgambaSxBack = 0.3
-var uPgambaDxBack = -0.3
-var upCodina = -0.3;
+var uPgambaSxFront = -0.3   //incr. per le velocita' delle gambe da -tot a +tot
+var uPgambaDxFront = 0.3
+var uPgambaSxBack = -0.3
+var uPgambaDxBack = 0.3
+var upCodina = 0.3;
 
 
 
@@ -187,14 +188,34 @@ function quad(a,b,c,d) {
  
 }
 
+//richiesta per la linear decrease! ! ! 
+function facciaNera(a,b,c,d){
+    pointsArray.push(vertices[a]);
+    colorsArray.push(colore[1]);
+    texCoordsArray.push(texCoord[3]);
+ 
+    pointsArray.push(vertices[b]);
+    colorsArray.push(colore[1]);
+    texCoordsArray.push(texCoord[2]);
+ 
+    pointsArray.push(vertices[c]);
+    colorsArray.push(colore[1]);
+    texCoordsArray.push(texCoord[1]);
+ 
+    pointsArray.push(vertices[d]);
+    colorsArray.push(colore[1]);
+    texCoordsArray.push(texCoord[0]);
+}
 
+
+/// 6 facciate per ogni object (cubo) ----> funzione modificata per le richieste sulla linear decrease
 function cube() {
-    quad(1, 0, 3, 2);
-    quad(2, 3, 7, 6);
-    quad(3, 0, 4, 7);
-    quad(6, 5, 1, 2);
-    quad(4, 5, 6, 7);
-    quad(5, 4, 0, 1);
+    quad(1, 0, 3, 2);  //parte sotto
+    quad(2, 3, 7, 6);  //parte sx
+    facciaNera(3, 0, 4, 7);  //fondoschiena -----> funzione che prende il colore nero come richiesto
+    quad(2, 6, 5, 1);  //petto -----> modificata per una linear decrease dalla testa (nera) verso il basso
+    quad(6, 7, 4, 5);  //parte sopra -----> modificata per avere la linear decrease da (4 5 6 7)
+    quad(5, 4, 0, 1);  //parte dx
 }
 
 
@@ -415,7 +436,7 @@ function traverse(Id) {
 
 function busto() {
 
-    fixTex(topT);
+    fixTex();
     instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5* bustoHeight, 0.0) );
     instanceMatrix = mult(instanceMatrix, scale4( bustoWidth, bustoHeight, bustoWidth));
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
@@ -593,7 +614,7 @@ function go_Forward_And_Jump(){
 
 
         
-        if(distanceFromOb < 27){ //per garantire lo stop
+        if(distanceFromOb < 25){ //per garantire lo stop
 
             //aumento la -distanceFromOb -----> che in realtà sarebbe la posizione del cavallo
             //NB stessa cosa poteva essere fatta diminuendo la vera distanza dell'ostacolo,
@@ -663,7 +684,7 @@ window.onload = function init() {
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
-    gl.viewport( -100, 100, canvas.width, canvas.height );  //modificato per averlo al centro
+    gl.viewport( -100, 150, canvas.width, canvas.height );  //modificato per averlo al centro e piu su
     gl.clearColor( 0.26, 0.51, 0.22, 0.5 );
 
     //per aggiungere le pareti trasparenti/mancanti! ! !  !.
@@ -748,6 +769,9 @@ window.onload = function init() {
     //button per la rotaz.
     document.getElementById("Rotation").onclick = function(){
         modelViewMatrix = mult(modelViewMatrix , rotateY(15));
+    };
+    document.getElementById("Rotation2").onclick = function(){
+        modelViewMatrix = mult(modelViewMatrix , rotateX(15));
     };
     //-------------------
 
