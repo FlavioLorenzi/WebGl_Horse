@@ -1,6 +1,6 @@
 /*  HW2 
         Lorenzi Flavio
-            matr. 1662963  */
+              */
 
 "use strict";
 
