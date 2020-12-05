@@ -19,4 +19,12 @@ see the report.pdf
 
 
 # Results
+init:
+![SC2 Image](results/a.png)
+
+start:
+![SC2 Image](results/b.png)
+
+end:
+![SC2 Image](results/c.png)
 
