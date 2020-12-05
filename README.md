@@ -12,3 +12,6 @@ Last "aesthetic" changes
 -function facciaNera added to make the back part of the torso totally black;
 -texture on the front side of the torso is turn to obtain instead a linear decrease from the black head;
 -ortho projection and gl.viewport set better.
+
+# Documentation 
+see the report.pdf
