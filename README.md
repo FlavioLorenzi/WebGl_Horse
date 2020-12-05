@@ -1,5 +1,7 @@
-# hw2
-Homework 2: Lorenzi Flavio
+# WebGL: making a jumping Horse
+LORENZI FLAVIO
+
+
 
 
 Last "aesthetic" changes
