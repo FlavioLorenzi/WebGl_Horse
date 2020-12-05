@@ -1,6 +1,7 @@
 # WebGL: making a jumping Horse
 LORENZI FLAVIO
 
+<a href="https://www.dis.uniroma1.it/"><img src="http://www.dis.uniroma1.it/sites/default/files/marchio%20logo%20eng%20jpg.jpg" width="500"></a>
 
 
 
@@ -15,3 +16,7 @@ Last "aesthetic" changes
 
 # Documentation 
 see the report.pdf
+
+
+# Results
+
